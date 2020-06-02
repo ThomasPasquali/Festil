@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+html(lang="it")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", type="text/css", href="css/timbra.css")
+        script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js", integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=", crossorigin="anonymous")
+        script(src="https://cdn.jsdelivr.net/npm/@riversun/simple-date-format@1.0.2/dist/simple-date-format.js")
+        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js")
+        script(src="js/timbra.js", defer)
+        title Timbratore
+    body
+        #container
+            #clock
+            form#form(action="submit/timbra", method="post")
+                #automan
+                    input#auto(type="radio", name="automatico", value="1", checked="checked")
+                    label(for="auto") Automatico
+                    div(style="width:60px")
+                    input#man(type="radio", name="automatico", value="0")
+                    label(for="man") Manuale
+                #dipendenti
+                    label(for="dipendente") Dipendente:
+                    select#dipendente(name="dipendente", required)
+                        option(value="") Selezionare il dipendente
+                        each dip in dipendenti
+                            option(value=dip.id, data-entrata=dip.entrata)=dip.nome+' '+dip.cognome
+                #dataora(class="disabled")
+                    label(for="data-ora") Data-ora:
+                    input#data-ora(type="datetime-local", name="timestamp", required)
+                #entraesce(class="disabled")
+                    input#entra(type="radio", name="entrata", value="1", required)
+                    label(for="entra") Entrata
+                    div(style="width:60px")
+                    input#esce(type="radio", name="entrata", value="0", required)
+                    label(for="esce") Uscita
+                input#conferma(type="submit", value="Conferma")
