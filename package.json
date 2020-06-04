@@ -1,0 +1,28 @@
+{
+  "name": "festil",
+  "version": "1.0.0",
+  "description": "Il tempo è denaro",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThomasPasquali/Festil.git"
+  },
+  "author": "Thomas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThomasPasquali/Festil/issues"
+  },
+  "homepage": "https://github.com/ThomasPasquali/Festil#readme",
+  "dependencies": {
+    "bcrypt": "^4.0.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "ini": "^1.3.5",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.4",
+    "pug": "^3.0.0"
+  }
+}

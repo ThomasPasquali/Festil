@@ -1,0 +1,19 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+.flex-v {
+    height: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-h {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
