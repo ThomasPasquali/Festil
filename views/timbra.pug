@@ -4,6 +4,7 @@ html(lang="it")
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         link(rel="stylesheet", type="text/css", href="css/timbra.css")
+        link(rel="stylesheet", type="text/css", href="css/misc.css")
         script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js", integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=", crossorigin="anonymous")
         script(src="https://cdn.jsdelivr.net/npm/@riversun/simple-date-format@1.0.2/dist/simple-date-format.js")
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css")
@@ -11,6 +12,8 @@ html(lang="it")
         script(src="js/timbra.js", defer)
         title Timbratore
     body
+        #topbar
+            a(href="report") Resoconti
         #container
             #clock
             form#form(action="submit/timbra", method="post")
@@ -23,7 +26,6 @@ html(lang="it")
                 #dipendenti
                     label(for="dipendente") Dipendente:
                     select#dipendente(name="dipendente", required)
-                        option(value="") Selezionare il dipendente
                         each dip in dipendenti
                             option(value=dip.id, data-entrata=dip.entrata)=dip.nome+' '+dip.cognome
                 #dataora(class="disabled")

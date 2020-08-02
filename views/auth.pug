@@ -3,7 +3,7 @@ html(lang="it")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        link(rel="stylesheet", type="text/css", href="css/timbraAuth.css")
+        link(rel="stylesheet", type="text/css", href="css/auth.css")
         script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js", integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=", crossorigin="anonymous")
     
         title Si identifichi
@@ -12,5 +12,5 @@ html(lang="it")
             if ok
                 h1.success Timbratura effettuata
             h3 La parolina magica &egrave;:
-            form(action="/submit/timbraAuth", method="post")
+            form(action="/submit/auth", method="post")
                 input(type="password", name="password", placeholder="questa qui...", autofocus)

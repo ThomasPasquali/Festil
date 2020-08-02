@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+html(lang="it")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", type="text/css", href="css/misc.css")
+        script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js", integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=", crossorigin="anonymous")
+        title Resoconti
+    body
+        #topbar
+            a(href="timbra") Timbrature
+        #container(style="height:auto;min-height:auto;")
+            if error
+                h1.error #{error}
+                
+            form(action="", method="post")
+                .inline(style="margin-right:20px;")
+                    label(for="dipendente") Dipendente:
+                    select#dipendente(name="dipendente", required)
+                        each dip in dipendenti
+                            option(value=dip.id, data-entrata=dip.entrata)=dip.nome+' '+dip.cognome
+                .inline
+                    p Dal
+                    if da
+                        input(type="date", name="da", value=da)
+                    else
+                        input(type="date", name="da")
+                    p Al
+                    if a
+                        input(type="date", name="a", value=a)
+                    else
+                        input(type="date", name="a")
+                        script $('input[name=a]').get(0).valueAsDate = new Date();
+                    input(type="submit", value="Genera resoconto")
+
+            if timbrature
+                table
+                    each t in timbrature
+                        tr
+                            td #{t.data}
+                            td #{t.in} - #{t.out}
+                            td #{t.diff}
+                h1 TOTALE: #{tot}
+

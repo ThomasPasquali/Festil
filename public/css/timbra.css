@@ -1,33 +1,6 @@
-html, body, #container {
-    height: 100%;
-    min-height: 100vh;
-}
-
-body {
-    background-color: black;
-    color: white;
-    font-size: 1.3rem;
-}
-
-select, input {
-    font-size: 1.1rem;
-}
-
-select {
-    width: 100%;
-}
-
 input[type='radio'] {
     height: 25px;
     width: 25px;
-}
-
-#container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-    width: 100%;
 }
 
 #clock {
@@ -46,26 +19,4 @@ input[type='radio'] {
 
 #automan, #entraesce, #dipendenti {
     display: inline-flex;
-}
-
-.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-    user-select: none;
-}
-
-.btn-blue {
-    color: #fff;
-    background-color: #337ab7;
-    border-color: #2e6da4;
-}
-
-.btn-red {
-    color: #fff;
-    background-color: #d9534f;
-    border-color: #d43f3a;
-}
-
-.jconfirm-title, .jconfirm-content {
-    color: black;
 }

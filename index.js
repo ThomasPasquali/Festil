@@ -18,7 +18,7 @@ app.use(session({
     secret: 'sesamo corrugato',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000*60*5 }
+    cookie: { maxAge: 1000*60*10 }
 }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -26,37 +26,84 @@ app.set('view engine', 'pug');
 const PORT = 8888;
 const db = new DB.Database(global.iniFile.db);
 
-/*************HOME PAGE***********/
+app.use(function(req, res, next){
+    if(req.url != '/submit/auth' && !req.session.estochi)
+        res.render('auth', { ok: (req.query.apposto?true:false) });
+    else 
+        next();
+})
+
+/*************TIMBRATURE***********/
 app.get('/timbra', async function (req, res) {
-    if(req.session.estochi)
-        res.render('timbra', { dipendenti: await db.query('SELECT *, IF((SELECT t.entrata FROM timbrature t WHERE t.dipendente = d.id ORDER BY t.data_ora DESC LIMIT 1) = 1, 0, 1) AS entrata FROM dipendenti d')});
-    else
-        res.render('timbraAuth', { ok: (req.query.apposto?true:false) });
+    res.render('timbra', { dipendenti: await getDipendenti()});
+});
+
+/*************REPORT***********/
+app.all('/report', async function (req, res) {
+    let params = { dipendenti: await getDipendenti() };
+    if(req.body.dipendente && req.body.da && req.body.a) {
+        let res = await db.query(
+            'SELECT * FROM timbrature WHERE dipendente = ? AND data_ora >= ? AND DATE(DATE_ADD(data_ora, INTERVAL -1 DAY)) <= ? ORDER BY data_ora ASC',
+            [req.body.dipendente, req.body.da, req.body.a]);
+        let timbrature = [];
+        let tot = 0;
+        
+        try{
+            for(let i = 0; i < res.length; i += 2) {
+                if(!(res[i] && res[i+1])) throw 'Timbrature dispari';
+
+                let en = new Date(res[i].data_ora);
+                let out = new Date(res[i+1].data_ora);
+                let diff = out.getTime() - en.getTime();
+
+                if(!(en.getYear()==out.getYear()&&en.getMonth()==out.getMonth()&&en.getDay()==out.getDay()))
+                    throw (Intl.DateTimeFormat('it',{ year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).format(en)+
+                        ' '+Intl.DateTimeFormat('it',{ year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).format(out)+
+                        ' sono su giorni diversi');
+                
+                timbrature.push({
+                    data: Intl.DateTimeFormat('it', { year: 'numeric', month: 'numeric', day: 'numeric'}).format(en),
+                    in: Intl.DateTimeFormat('it', {hour: 'numeric', minute: 'numeric'}).format(en),
+                    out: Intl.DateTimeFormat('it', {hour: 'numeric', minute: 'numeric'}).format(out),
+                    diff: msToHMS(diff)});
+                tot += diff;
+            }
+        }catch(e) {
+            params.error = e;
+        }
+        
+        params.timbrature = timbrature
+        params.risultati = res;
+        params.da = req.body.da;
+        params.a = req.body.a;
+        params.tot = msToHMS(tot);
+    }
+    res.render('report', params);
 });
 
 /*************SUBMITS***********/
 app.post('/submit/timbra', function (req, res) {
-    if(req.session.estochi) {
-        db.query(
-            'INSERT INTO timbrature (data_ora,dipendente,automatico,entrata) VALUES(?,?,?,?)',
-            [req.body.timestamp, req.body.dipendente, req.body.automatico, req.body.entrata]
-        ).then(() => { 
-            req.session.destroy();
-            res.writeHead(302, {'Location': '/timbra?apposto=si'});
-            res.end();
-        });
-    }else {
-        res.writeHead(302, {'Location': '/timbra'});
-        res.end();
-    }
+    db.query(
+        'INSERT INTO timbrature (data_ora,dipendente,automatico,entrata) VALUES(?,?,?,?)',
+        [req.body.timestamp, req.body.dipendente, req.body.automatico, req.body.entrata]
+    ).then(() => { res.writeHead(302, {'Location': '/timbra'}); res.end(); });
 });
 
-app.post('/submit/timbraAuth', function (req, res) {
-    if( req.body.password &&
-        bcrypt.compareSync(req.body.password, bcrypt.hashSync(iniFile.pw.timbra, 10)))
+app.post('/submit/auth', function (req, res) {
+    if(req.body.password && bcrypt.compareSync(req.body.password, bcrypt.hashSync(iniFile.pw.timbra, 10)))
             req.session.estochi = 'luminario007';
     res.writeHead(302, {'Location': '/timbra'});
     res.end();
 });
 
 const server = app.listen(PORT);
+
+/*************MISC***********/
+function getDipendenti() {
+    return db.query('SELECT *, IF((SELECT t.entrata FROM timbrature t WHERE t.dipendente = d.id ORDER BY t.data_ora DESC LIMIT 1) = 1, 0, 1) AS entrata FROM dipendenti d');
+}
+
+function msToHMS(ms) {
+    let s = ms/1000;
+    return parseInt(s/(60*60))+':'+parseInt((s%(60*60))/60);
+}
