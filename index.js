@@ -18,7 +18,7 @@ app.use(session({
     secret: 'sesamo corrugato',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000*60*10 }
+    cookie: { maxAge: 1000*60*100 }
 }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -56,7 +56,8 @@ app.all('/report', async function (req, res) {
                 let out = new Date(res[i+1].data_ora);
                 let diff = out.getTime() - en.getTime();
 
-                if(!(en.getYear()==out.getYear()&&en.getMonth()==out.getMonth()&&en.getDay()==out.getDay()))
+                console.log(new Date(en.getTime()+86400000).getDay()+' '+out.getDay());
+                if(!(en.getYear()==out.getYear()&&en.getMonth()==out.getMonth()&&(en.getDay()==out.getDay() || new Date(en.getTime()+86400000).getDay()==out.getDay())))
                     throw (Intl.DateTimeFormat('it',{ year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).format(en)+
                         ' '+Intl.DateTimeFormat('it',{ year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).format(out)+
                         ' sono su giorni diversi');
