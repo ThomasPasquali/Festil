@@ -42,25 +42,24 @@ app.get('/timbra', async function (req, res) {
 app.all('/report', async function (req, res) {
     let params = { dipendenti: await getDipendenti() };
     if(req.body.dipendente && req.body.da && req.body.a) {
-        let res = await db.query(
-            'SELECT * FROM timbrature WHERE dipendente = ? AND data_ora >= ? AND DATE(DATE_ADD(data_ora, INTERVAL -1 DAY)) <= ? ORDER BY data_ora ASC',
+        let ins = await db.query(
+            'SELECT * FROM timbrature WHERE dipendente = ? AND data_ora >= ? AND DATE(DATE_ADD(data_ora, INTERVAL -1 DAY)) <= ? AND entrata = 1 ORDER BY data_ora ASC',
+            [req.body.dipendente, req.body.da, req.body.a]);
+        let outs = await db.query(
+            'SELECT * FROM timbrature WHERE dipendente = ? AND data_ora >= ? AND DATE(DATE_ADD(data_ora, INTERVAL -1 DAY)) <= ? AND entrata = 0 ORDER BY data_ora ASC',
             [req.body.dipendente, req.body.da, req.body.a]);
         let timbrature = [];
         let tot = 0;
+        let insI = 0, outsI = 0;
+        console.log(ins, outs)
         
         try{
-            for(let i = 0; i < res.length; i += 2) {
-                if(!(res[i] && res[i+1])) throw 'Timbrature dispari';
-
-                let en = new Date(res[i].data_ora);
-                let out = new Date(res[i+1].data_ora);
+            while(ins[insI] && outs[outsI]){
+                let en = new Date(ins[insI++].data_ora);
+                let out = new Date(outs[outsI++].data_ora);
                 let diff = out.getTime() - en.getTime();
 
-                console.log(new Date(en.getTime()+86400000).getDay()+' '+out.getDay());
-                if(!(en.getYear()==out.getYear()&&en.getMonth()==out.getMonth()&&(en.getDay()==out.getDay() || new Date(en.getTime()+86400000).getDay()==out.getDay())))
-                    throw (Intl.DateTimeFormat('it',{ year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).format(en)+
-                        ' '+Intl.DateTimeFormat('it',{ year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).format(out)+
-                        ' sono su giorni diversi');
+                console.log(en.getTime()+' '+out.getTime()+'  '+diff);
                 
                 timbrature.push({
                     data: Intl.DateTimeFormat('it', { year: 'numeric', month: 'numeric', day: 'numeric'}).format(en),
