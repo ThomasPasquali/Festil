@@ -59,7 +59,7 @@ app.all('/report', async function (req, res) {
                 let out = new Date(outs[outsI++].data_ora);
                 let diff = out.getTime() - en.getTime();
 
-                console.log(en.getTime()+' '+out.getTime()+'  '+diff);
+                //console.log(en.getTime()+' '+out.getTime()+'  '+diff);
                 
                 timbrature.push({
                     data: Intl.DateTimeFormat('it', { year: 'numeric', month: 'numeric', day: 'numeric'}).format(en),
